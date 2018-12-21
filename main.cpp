@@ -15,6 +15,16 @@ int i;
 int pv[4]; // value read from IR sensor
 boolean sw = 0;
 
+// PID coefficients
+int kp, ki, kd;
+
+int err[4] = {0, 0, 0, 0};     // err between current state and goal
+int derr[4] = {0, 0, 0, 0};    // err difference betweeen current err and previous err 
+int integral[4] = {0, 0, 0, 0};   // accumlation 
+int origin[4] = {0, 0, 0, 0};     // target value for IR sensor
+int errz[4]  = {0, 0, 0, 0};      // previous err
+
+
 void show_status(int c); // show 0 1 2 3, depends on current movement
 void pc( int a[]);
 
@@ -116,10 +126,71 @@ void show_status( int c ){
   for(i = 0; i < 4; i++){
     digitalWrite(d[i], b[i]);
   }
+
  }
 
-// pc controls motor speed based on array input.
+// pc will detertmine current status detected: right; left; right angle
 void pc(int a[]){
 
+    if( ){// if a0 = white, a4 = white; use PID control curve and strait line
+
+    }else if {// if a0 = a1 = a2 = black; a3 = white: it is a right angle to the left
+
+    }else if{// if a0 = white; a1 = black = a2 = a3 = black: it is a right angle to the right
+
+    }else{// if a0 = a1 = a2 = a3 = black: it is a cross
+
+    }
 
 }
+
+// e = err; de = derr; 
+void pid_controll(int a[]){
+
+   for(i = 0; i < 4; i++){    
+        err[i] = a[i] - origin[i];
+      }
+
+  for(i = 0; i < 4; i++){    
+        integral[i] = integral[i] + err[i];
+      }
+
+  for(i = 0; i < 4; i++){    
+       derr[i] = err[i] - origin[i];
+      }
+  
+  for(i = 0; i < 4; i++){    
+       derr[i] = err[i] - errz[i];
+      }
+
+  u = (e*kp + i*kl + de * kd);  
+  d = abs(u/50);
+  if(d>100)
+  {
+    d = 100;
+  }
+  m = 255-d*255/100;
+  if(u<0)
+  {
+    digitalWrite(da,0);
+    analogWrite(pa,m);
+    digitalWrite(db,0);
+    analogWrite(pb,m);
+  }
+  else if(u>0)
+  {
+    digitalWrite(da,1);
+    analogWrite(pa, m);
+    digitalWrite(db,1);
+    analogWrite(pb, m);
+  }
+  else if(u==0)
+  {
+    m = 255;
+    analogWrite(pa,m);
+    analogWrite(pb,m);
+  }
+  ez = e;
+  }
+}
+
