@@ -2,14 +2,14 @@
 #include<Arduino.h>
 const int dir_a = 12; // pin motor A direction
 const int pwn_a = 3;  // pin motor A output
-const int dir_b = 13; // pin motor b direction
+const int dir_b = 13; // pin motor B direction
 const int pwn_b = 11; // pin motor B output
 
 const int s = 14; // pin for switch
 
-const int IRpin[4] = {6, 2, 1, 7}; //pin for IR sensor
+const int IRpin[4] = {6, 15, 16, 7}; //pin for IR sensor
 
-const int displayer[4] = {10, 9 , 8, 3}; // pin for 7-segment display 
+const int displayer[4] = {10, 9 , 8, 1}; // pin for 7-segment display 
 
 int i;
 int pv[4]; // value read from IR sensor
@@ -22,7 +22,7 @@ int d[2] = {0, 0};
 int err[2] = {0, 0};     // err between current state and goal
 int derr[2] = {0, 0};    // err difference betweeen current err and previous err 
 int integral[2] = {0, 0};   // accumlation 
-int origin[2] = {150, 150};     // target value for IR sensor
+int origin[4] = {150, 150, 150, 150};     // target value for IR sensor
 int errz[2]  = {0, 0};      // previous err
 
 int u[2] = {0, 0};
@@ -69,7 +69,6 @@ void setup(){
     sw = !digitalRead(s);
     origin[0] = analogRead(IRpin[1]);
     origin[1] = analogRead(IRpin[2]);
-   
   }
 
 }
@@ -139,7 +138,7 @@ void show_status( int c ){
 void pc(int a[]){
 int c1;
 
-    if( a[0] > origin[0] && a[3] > origin[3] ){// if a0 = white, a4 = white; use PID control curve and strait line
+    if( a[0] > origin[0] && a[1] < origin[1] && a[2] < origin[2] && a[3] > origin[3] ){// if a0 = white, a4 = white; use PID control curve and strait line
       c1 = 0;
       pid_controll(a);
     }else if( a[0] < origin[0] && a[1] < origin[1] && a[2] < origin[2] && a[3] > origin[3]){// if a0 = a1 = a2 = black; a3 = white: it is a right angle to the left
@@ -160,7 +159,7 @@ void pid_controll(int a[]){
   int PID[2] = {left, right};
 
   for(i = 0; i < 2; i++){    
-        err[i] = PID[i] - origin[i];
+        err[i] = PID[i] - origin[i+1];
       }
 
   for(i = 0; i < 2; i++){    
@@ -190,7 +189,7 @@ void pid_controll(int a[]){
   u0 = u[0];
   u1 = u[1];
 
-// d1
+  // d1
   if(d0 > 100){
     d0 = 100;
   }
@@ -233,5 +232,3 @@ void pid_controll(int a[]){
   }
 
 }
-
-
