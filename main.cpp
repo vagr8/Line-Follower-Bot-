@@ -17,6 +17,7 @@ boolean sw = 0;
 
 // PID coefficients
 int kp, ki, kd;
+int e, dif, de, u;
 
 int err[4] = {0, 0, 0, 0};     // err between current state and goal
 int derr[4] = {0, 0, 0, 0};    // err difference betweeen current err and previous err 
@@ -134,9 +135,9 @@ void pc(int a[]){
 
     if( ){// if a0 = white, a4 = white; use PID control curve and strait line
 
-    }else if {// if a0 = a1 = a2 = black; a3 = white: it is a right angle to the left
+    }else if() {// if a0 = a1 = a2 = black; a3 = white: it is a right angle to the left
 
-    }else if{// if a0 = white; a1 = black = a2 = a3 = black: it is a right angle to the right
+    }else if(){// if a0 = white; a1 = black = a2 = a3 = black: it is a right angle to the right
 
     }else{// if a0 = a1 = a2 = a3 = black: it is a cross
 
@@ -145,6 +146,7 @@ void pc(int a[]){
 }
 
 // e = err; de = derr; 
+// Actually only IR1 and IR2 is needed. 
 void pid_controll(int a[]){
 
    for(i = 0; i < 4; i++){    
@@ -163,8 +165,9 @@ void pid_controll(int a[]){
        derr[i] = err[i] - errz[i];
       }
 
-  u = (e*kp + i*kl + de * kd);  
+  u = (e*kp + i*ki + de * kd);  // TBD
   d = abs(u/50);
+
   if(d>100)
   {
     d = 100;
