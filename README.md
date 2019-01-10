@@ -1,7 +1,7 @@
 # Line-Follower-Bot-
 Line Follower Bot
 
-This program runs on Arduino Uno with 4 IR sensors; 1 7-segment displayer; 4 LED bulbs. \n
+This program runs on Arduino Uno with 4 IR sensors; 1 7-segment displayer; 4 LED bulbs.
 Sensor.cpp will check if sensor is working and shows the read.
 
 Control_PID uses PID controler to control.
