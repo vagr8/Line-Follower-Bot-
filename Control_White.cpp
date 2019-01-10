@@ -110,20 +110,20 @@ void Control(int p[]){
   int left = p[1];
   int right = p[2];
 
-  if(p[0] == 1 && p[3] == 1){ // All White
-    if( p[1] == 1 && p[2] == 1){
+  if(p[0] == 1 && p[3] == 1){//  White on Both Sides
+    if( p[1] == 1 && p[2] == 1){ // All White
         run();
     }else if( p[1] == 0){ // turn left, A back B forward
-      digitalWrite(dir_a, 0);
-      analogWrite(pwn_a, 150); 
+      digitalWrite(dir_a, 1);
+      analogWrite(pwn_a, 250); 
       digitalWrite(dir_b, 1);
       analogWrite(pwn_b, 200);
       show_status(3);
     } else if( p[2] == 0){ // turn right, A forward B back
       digitalWrite(dir_a, 1);
       analogWrite(pwn_a, 200);
-      digitalWrite(dir_b, 0);
-      analogWrite(pwn_b, 150);
+      digitalWrite(dir_b, 1);
+      analogWrite(pwn_b, 250);
       show_status(2);
     }else{
       run();
@@ -132,14 +132,14 @@ void Control(int p[]){
     run();
   }else if( p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 1){ // left right angle
       digitalWrite(dir_a, 0);
-      analogWrite(pwn_a, 120);
+      analogWrite(pwn_a, 200);
       digitalWrite(dir_b, 1);
-      analogWrite(pwn_b, 80);
+      analogWrite(pwn_b, 200);
   }else if( p[0] == 1 && p[1] == 0 && p[2] == 0 && p[3] == 0){ // right right angle
       digitalWrite(dir_a, 1);
-      analogWrite(pwn_a, 80);
+      analogWrite(pwn_a, 200);
       digitalWrite(dir_b, 0);
-      analogWrite(pwn_b, 120);
+      analogWrite(pwn_b, 200);
   }else{
     stop();
   }
@@ -148,9 +148,9 @@ void Control(int p[]){
 void run(){
   show_status(1);
   digitalWrite(dir_a, 1);
-  analogWrite(pwn_a, 80);
+  analogWrite(pwn_a, 160);
   digitalWrite(dir_b, 1);
-  analogWrite(pwn_b, 80);
+  analogWrite(pwn_b, 160);
 }
 
 void stop(){
