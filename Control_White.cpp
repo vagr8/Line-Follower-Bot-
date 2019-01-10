@@ -77,7 +77,7 @@ void loop(){
       tcounter = 0;
       
       LEDtimer++;
-      if(LEDtimer > 25){
+      if(LEDtimer > 20){
         LEDtimer = 0;
         ledDisplay();
       }
@@ -228,25 +228,28 @@ void show_status( int c ){
    int bit[4];
 
    LEDcount++;
-   if(LEDcount > 4){
+   if(LEDcount > 5){
      LEDcount = 0;
    }
 
-  reset(bit);
   switch(LEDcount){
-    case 0: 
-    bit[0] = 1;
+    case 0:
+    reset(bit);
     break;
 
     case 1: 
+    bit[0] = 1;
+    break;
+
+    case 2: 
     bit[1] = 1;
     break;
     
-    case 2: 
+    case 3: 
     bit[2] = 1;
     break;
     
-    case 3: 
+    case 4: 
     bit[3] = 1;
     break;
   }
