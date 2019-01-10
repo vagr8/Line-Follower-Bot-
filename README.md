@@ -1,14 +1,16 @@
 # Line-Follower-Bot-
 Line Follower Bot
 
-This program runs on Arduino Uno with 4 IR sensors.
+This program runs on Arduino Uno with 4 IR sensors; 1 7-segment displayer; 4 LED bulbs
 Sensor.cpp will check if sensor is working and shows the read
 
 Control_PID uses PID controler to control
-White.cpp takes all 4 sensors on white as straight line
-Black.cpp supposes when the 2 sensors in the middle is black as a straight line
+Control_White.cpp takes all 4 sensors on white as straight line
+Control_Black.cpp supposes when the 2 sensors in the middle is black as a straight line
 
 All these 3 are possible to run a line follower bot
 
-I know perhaps some of you are too busy to take bath.
-But please force yourself to take bath everyday for other's benefit.
+Amoing those, Control_White is the most stable one, and it has LED effect so its cooler.
+
+I know perhaps some of you are too busy for having shower.
+But please force yourself to take shower everyday for the benefit of others.
