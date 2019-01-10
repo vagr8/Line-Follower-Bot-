@@ -1,7 +1,7 @@
 #include<TimerOne.h>
 #include<Arduino.h>
-const int dir_a = 12; // pin motor A direction
-const int pwn_a = 3;  // pin motor A output
+const int dir_a = 12; // pin motor A direction; assume 1= forward; 0 = backward
+const int pwn_a = 3;  // pin motor A output ;   0 = MaxSpeed, 255 = STOP
 const int dir_b = 13; // pin motor B direction
 const int pwn_b = 11; // pin motor B output
 
@@ -25,7 +25,7 @@ int LEDcount = 0;
 void show_status(int c); // show 0 1 2 3, depends on current movement
 void pc( int a[]);
 void Control(int a[]);
-void run();
+void run(int a);
 void stop();
 void black_or_white(int a[]);
 void RightAngleHandler( );
@@ -47,7 +47,7 @@ void setup(){
   pinMode(dir_b, OUTPUT);
   pinMode(pwn_b, OUTPUT);
 
-//set displayer pin and led pin
+//set displayer pin and LED pin
   for(i = 0; i < 4; i++){
     pinMode(displayer[i], OUTPUT);
     pinMode(ledPin[i], OUTPUT);
@@ -127,45 +127,45 @@ void Control(int p[]){
 
   if(p[0] == 1 && p[3] == 1){//  White on Both Sides
     if( p[1] == 1 && p[2] == 1){ // All White
-        run();
-    }else if( p[1] == 0){ // turn left, A back B forward
+      run(160);
+    }else if( p[1] == 0){ //  turn left, speed: A < B 
       digitalWrite(dir_a, 1);
       analogWrite(pwn_a, 250); 
       digitalWrite(dir_b, 1);
-      analogWrite(pwn_b, 200);
+      analogWrite(pwn_b, 180);
       show_status(3);
-    } else if( p[2] == 0){ // turn right, A forward B back
+    } else if( p[2] == 0){ // turn right, speed: A > B
       digitalWrite(dir_a, 1);
-      analogWrite(pwn_a, 200);
+      analogWrite(pwn_a, 180);
       digitalWrite(dir_b, 1);
       analogWrite(pwn_b, 250);
       show_status(2);
     }else{
-      run();
+      run(160);
     }
   }else if( p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 0){ // All black
-    run();
+    stop();
   }else if( p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 1){ // left right angle
-      digitalWrite(dir_a, 0);
-      analogWrite(pwn_a, 200);
-      digitalWrite(dir_b, 1);
-      analogWrite(pwn_b, 200);
+    digitalWrite(dir_a, 0);
+    analogWrite(pwn_a, 200);
+    digitalWrite(dir_b, 1);
+    analogWrite(pwn_b, 200);
   }else if( p[0] == 1 && p[1] == 0 && p[2] == 0 && p[3] == 0){ // right right angle
-      digitalWrite(dir_a, 1);
-      analogWrite(pwn_a, 200);
-      digitalWrite(dir_b, 0);
-      analogWrite(pwn_b, 200);
+    digitalWrite(dir_a, 1);
+    analogWrite(pwn_a, 200);
+    digitalWrite(dir_b, 0);
+    analogWrite(pwn_b, 200);
   }else{
     stop();
   }
 }
 
-void run(){
+void run(int a){
   show_status(1);
   digitalWrite(dir_a, 1);
-  analogWrite(pwn_a, 160);
+  analogWrite(pwn_a, a);
   digitalWrite(dir_b, 1);
-  analogWrite(pwn_b, 160);
+  analogWrite(pwn_b, a);
 }
 
 void stop(){
@@ -218,7 +218,6 @@ void show_status( int c ){
   for(i = 0; i < 4; i++){
     digitalWrite(displayer[i], b[i]);
   }
-
  }
 
  // Masami thinks he like to take shower, but I don't agree with him.
