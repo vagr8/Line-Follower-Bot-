@@ -125,16 +125,18 @@ void pid_controll(int p[]){
       digitalWrite(dir_b, 0);
       analogWrite(pwn_b, 120);
   }else if( p[0] == 1 && p[3] == 1){
-    if( left == 1 ){ // A front B back 
+    if( left == 1 ){ // Turn Right, A front B back 
       digitalWrite(dir_a, 1);
       analogWrite(pwn_a, 80);
       digitalWrite(dir_b, 0);
       analogWrite(pwn_b, 120);
-    }else if( right == 1 ){ // B front A　back   
+      show_status(2);
+    }else if( right == 1 ){ // Turn Left,  B front A　back   
       digitalWrite(dir_a, 0);
       analogWrite(pwn_a, 120); 
       digitalWrite(dir_b, 1);
       analogWrite(pwn_b, 80);
+      show_status(3);
     }else{
       delay(1000);
       run();
@@ -145,6 +147,7 @@ void pid_controll(int p[]){
 }
 
 void run(){
+  show_status(1);
   digitalWrite(dir_a, 1);
   analogWrite(pwn_a, 80);
   digitalWrite(dir_b, 1);
@@ -152,6 +155,7 @@ void run(){
 }
 
 void stop(){
+   show_status(0);
    analogWrite(pwn_a, 255);
    analogWrite(pwn_b, 255);
 }
@@ -167,28 +171,28 @@ void show_status( int c ){
 
  switch(c){
 
-    case 0:
+    case 0: // STOP
      b[0] = 0;
      b[1] = 0;
      b[2] = 0;
      b[3] = 0;
      break;
 
-    case 1:
+    case 1: // Forward
      b[0] = 1;
      b[1] = 0;
      b[2] = 0;
      b[3] = 0; 
      break;
 
-    case 2:
+    case 2: // Turn Right
      b[0] = 0;
      b[1] = 1;
      b[2] = 0;
      b[3] = 0;    
      break;
 
-    case 3:
+    case 3: // Turn Left
      b[0] = 1;
      b[1] = 1;
      b[2] = 0;
