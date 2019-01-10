@@ -8,7 +8,7 @@ const int pwn_b = 11; // pin motor B output
 
 const int s = 14; // pin for switch
 
-const int IRpin[4] = {0, 16, 15, 1}; //pin for IR sensor
+const int IRpin[4] = {0, 16, 15, 2}; //pin for IR sensor
 
 const int displayer[4] = {10, 9 , 8, 1}; // pin for 7-segment display 
 
