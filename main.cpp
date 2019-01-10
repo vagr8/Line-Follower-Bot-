@@ -239,5 +239,4 @@ void pid_controll(int a[]){
   for(i = 0; i < 2; i++){
     errz[i] = err[i];
   }
-
 }
