@@ -7,9 +7,11 @@ const int pwn_b = 11; // pin motor B output
 
 const int s = 14; // pin for switch
 
-const int IRpin[4] = {6, 15, 16, 7}; //pin for IR sensor
+const int IRpin[4] = {0, 16, 15, 2}; //pin for IR sensor
 
 const int displayer[4] = {10, 9 , 8, 1}; // pin for 7-segment display 
+
+int black[4] = {350, 200, 300, 350};
 
 int i;
 int pv[4]; // value read from IR sensor
@@ -23,6 +25,7 @@ int err[2] = {0, 0};     // err between current state and goal
 int derr[2] = {0, 0};    // err difference betweeen current err and previous err 
 int integral[2] = {0, 0};   // accumlation 
 int origin[4] = {150, 150, 150, 150};     // target value for IR sensor
+int origin2[2] = {0, 0};
 int errz[2]  = {0, 0};      // previous err
 
 int u[2] = {0, 0};
@@ -67,8 +70,10 @@ void setup(){
     while(sw == 0)
   {
     sw = !digitalRead(s);
-    origin[0] = analogRead(IRpin[1]);
-    origin[1] = analogRead(IRpin[2]);
+    origin[0] = analogRead(IRpin[0]);
+    origin[1] = analogRead(IRpin[1]);
+    origin[2] = analogRead(IRpin[2]);
+    origin[3] = analogRead(IRpin[3]);
   }
 
 }
@@ -129,7 +134,7 @@ void show_status( int c ){
    }
 
   for(i = 0; i < 4; i++){
-    digitalWrite(d[i], b[i]);
+    digitalWrite(displayer[i], b[i]);
   }
 
  }
@@ -138,12 +143,12 @@ void show_status( int c ){
 void pc(int a[]){
 int c1;
 
-    if( a[0] > origin[0] && a[1] < origin[1] && a[2] < origin[2] && a[3] > origin[3] ){// if a0 = white, a4 = white; use PID control curve and strait line
+    if( a[0] > black[0] && a[1] < black[1] && a[2] < black[2] && a[3] > black[3] ){// if a0 = white, a4 = white; use PID control curve and strait line
       c1 = 0;
       pid_controll(a);
-    }else if( a[0] < origin[0] && a[1] < origin[1] && a[2] < origin[2] && a[3] > origin[3]){// if a0 = a1 = a2 = black; a3 = white: it is a right angle to the left
+    }else if( a[0] < black[0] && a[1] < black[1] && a[2] < black[2] && a[3] > black[3]){// if a0 = a1 = a2 = black; a3 = white: it is a right angle to the left
       c1 = 1;
-    }else if( a[0] > origin[0] && a[1] < origin[1] && a[2] < origin[2] && a[3] < origin[3]){// if a0 = white; a1 = black = a2 = a3 = black: it is a right angle to the right
+    }else if( a[0] > black[0] && a[1] < black[1] && a[2] < black[2] && a[3] < black[3]){// if a0 = white; a1 = black = a2 = a3 = black: it is a right angle to the right
       c1 = 2;
     }else{// if a0 = a1 = a2 = a3 = black: it is a cross
       c1 = 3;
@@ -158,8 +163,12 @@ void pid_controll(int a[]){
 
   int PID[2] = {left, right};
 
+  for(i = 0; i < 2; i++){
+    origin2[i] = origin[i+1];
+  }
+
   for(i = 0; i < 2; i++){    
-        err[i] = PID[i] - origin[i+1];
+        err[i] = PID[i] - origin2[i];
       }
 
   for(i = 0; i < 2; i++){    
