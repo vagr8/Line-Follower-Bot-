@@ -19,6 +19,7 @@ int white[4] = {0, 0, 0, 0};            // determine color detected. white = 1, 
 int i;
 int pv[4] = {0, 0, 0, 0}; // value read from IR sensor
 boolean sw = 0;           //switch value 
+int LEDtimer = 0;
 int LEDcount = 0;
 
 void show_status(int c); // show 0 1 2 3, depends on current movement
@@ -37,10 +38,6 @@ int ledconter = 0; // ledcounter
 // function ti countes time.
 void ti(){
   tcounter++;
-}
-
-void ledti(){
-  ledconter++;
 }
 
 void setup(){
@@ -74,16 +71,17 @@ void setup(){
 }
 
 void loop(){  
-
-    if( ledconter > 250 ){
-      ledconter = 0;
-      ledDisplay();
-    }
   
     if(tcounter > 10)         // read value every 10 ms 
     {
       tcounter = 0;
       
+      LEDtimer++;
+      if(LEDtimer > 25){
+        LEDtimer = 0;
+        ledDisplay();
+      }
+
       // read IR sensor value and put into pv[4]
       for(i = 0; i < 4; i++){    
         pv[i] = analogRead(IRpin[i]);
