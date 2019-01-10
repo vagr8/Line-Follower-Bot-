@@ -77,7 +77,7 @@ void loop(){
       tcounter = 0;
       
       LEDtimer++;
-      if(LEDtimer > 20){
+      if(LEDtimer > 20){ // Change Display every 10*20 = 200 ms
         LEDtimer = 0;
         ledDisplay();
       }
@@ -221,7 +221,7 @@ void show_status( int c ){
 
  }
 
- // Masami don't like to take shower
+ // Masami thinks he like to take shower, but I don't agree with him.
 
  void ledDisplay(){
    int i;
