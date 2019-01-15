@@ -5,13 +5,13 @@ const int pwn_a = 3;  // pin motor A output ;   0 = MaxSpeed, 255 = STOP
 const int dir_b = 13; // pin motor B direction
 const int pwn_b = 11; // pin motor B output
 
-const int ledPin[4] = {2, 4, 6, 7}; // Suppose LED pin = 2 4 6 7
+const int ledPin[4] = {4, 5, 6, 7}; // Suppose LED pin = 2 4 6 7
 
 const int s = 14; // pin for switch
 
 const int IRpin[4] = {4, 16, 15, 5}; //pin for IR sensor
 
-const int displayer[4] = {10, 9 , 8, 1}; // pin for 7-segment display 
+const int displayer[4] = {10, 8, 9, 1}; // pin for 7-segment display 
 
 int black[4] = {400, 480, 400, 100};    // thershold for black. If input value < black[], it's black
 int white[4] = {0, 0, 0, 0};            // determine color detected. white = 1, black = 0
@@ -31,6 +31,7 @@ void black_or_white(int a[]);
 void RightAngleHandler( );
 void ledDisplay();
 void reset(int a[]);
+void StopandRun(int a, int m);
 
 int tcounter = 0; // timer counter 
 int ledconter = 0; // ledcounter
@@ -67,7 +68,6 @@ void setup(){
   {
     sw = !digitalRead(s);
   }
-
 }
 
 void loop(){  
@@ -86,7 +86,7 @@ void loop(){
       for(i = 0; i < 4; i++){    
         pv[i] = analogRead(IRpin[i]);
       }
-      pc(pv);                       // function pc controls the movement of 2 motors based on array pv[4]
+      pc(pv);  // function pc controls the movement of 2 motors based on array pv[4]
     }
 
     for(i = 0; i < 4; i++ ){
@@ -97,17 +97,14 @@ void loop(){
      Serial.print(white[i]);
       Serial.print( " " );
     }
+
   Serial.print( "\n");
-  
   }
 
 // pc will detertmine current status detected: right; left; right angle
 void pc(int a[]){
-  int c1;
-
   black_or_white(a);
   Control(white);
-
 }
 
 void black_or_white(int r[]){
@@ -122,8 +119,6 @@ void black_or_white(int r[]){
 }
 
 void Control(int p[]){
-  int left = p[1];
-  int right = p[2];
 
   if(p[0] == 1 && p[3] == 1){//  White on Both Sides
     if( p[1] == 1 && p[2] == 1){ // All White
@@ -144,17 +139,19 @@ void Control(int p[]){
       run(160);
     }
   }else if( p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 0){ // All black
-    stop();
+    StopandRun( 1000, 160);
   }else if( p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 1){ // left right angle
     digitalWrite(dir_a, 0);
-    analogWrite(pwn_a, 200);
+    analogWrite(pwn_a, 60);
     digitalWrite(dir_b, 1);
-    analogWrite(pwn_b, 200);
+    analogWrite(pwn_b, 60);
+    delay(500);
   }else if( p[0] == 1 && p[1] == 0 && p[2] == 0 && p[3] == 0){ // right right angle
     digitalWrite(dir_a, 1);
-    analogWrite(pwn_a, 200);
+    analogWrite(pwn_a, 60);
     digitalWrite(dir_b, 0);
-    analogWrite(pwn_b, 200);
+    analogWrite(pwn_b, 60);
+    delay(500);
   }else{
     stop();
   }
@@ -175,8 +172,7 @@ void stop(){
 }
 
 void RightAngleHandler(){
-
-
+  // noting, just in case
 }
 
 // STOP = 0; Forward = 1; Turn Right = 2; Turn left = 3;
@@ -220,6 +216,12 @@ void show_status( int c ){
   }
  }
 
+ void StopandRun(int t, int speed){
+   stop();
+   delay(t);
+   run(speed);
+  }
+
  // Masami thinks he like to take shower, but I don't agree with him.
 
  void ledDisplay(){
@@ -229,11 +231,11 @@ void show_status( int c ){
    LEDcount++;
    if(LEDcount > 5){
      LEDcount = 0;
+      reset(bit);
    }
 
   switch(LEDcount){
     case 0:
-    reset(bit);
     break;
 
     case 1: 
@@ -255,14 +257,17 @@ void show_status( int c ){
 
   for(i = 0; i < 4; i++){
     digitalWrite( ledPin[i], !bit[i] );
-  }
-  
+  }  
  }
 
  void reset(int a[]){
    int i;
 
-  for(i = 0; i<4 ;i++){
+  a[i] = 1;
+  for(i = 1; i<4 ;i++){
     a[i] = 0;
   }
  }
+
+
+ // FIFO Round Robin WOFQ and someting else
