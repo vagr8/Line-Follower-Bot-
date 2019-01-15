@@ -1,5 +1,6 @@
 #include<TimerOne.h>
 #include<Arduino.h>
+
 const int dir_a = 13; // pin motor A direction; assume 1= forward; 0 = backward
 const int pwn_a = 11;  // pin motor A output ;   0 = MaxSpeed, 255 = STOP
 const int dir_b = 12; // pin motor B direction
@@ -11,9 +12,9 @@ const int s = 14; // pin for switch
 
 const int IRpin[4] = {4, 16, 15, 5}; //pin for IR sensor; analog write
 
-const int displayer[4] = {3, 8, 9, 10}; // pin for 7-segment display 
+const int displayer[4] = {10, 9, 8, 3}; // pin for 7-segment display 
 
-int black[4] = {400, 450, 400, 100};    // thershold for black. If input value < black[], it's black
+int black[4] = {400, 450, 400, 200};    // thershold for black. If input value < black[], it's black
 int white[4] = {0, 0, 0, 0};            // determine color detected. white = 1, black = 0
 int display = 0;
 
@@ -21,7 +22,7 @@ int i;
 int pv[4] = {0, 0, 0, 0}; // value read from IR sensor
 boolean sw = 0;           //switch value 
 int LEDtimer = 0;
-int LEDcount = 0;
+// int LEDcount = 0;
 
 void show_status(int c); // show 0 1 2 3, depends on current movement
 void pc( int a[]);
@@ -60,13 +61,10 @@ void setup(){
   Timer1.initialize(1000);
   Timer1.attachInterrupt(ti);
 
-  digitalWrite(dir_a, 1);
-  analogWrite(pwn_a, 255);
-  digitalWrite(dir_b, 1);
-  analogWrite(pwn_b, 255);
-
-    while(sw == 0)
-  {
+  show_status(0);
+  stop();
+  
+  while(sw == 0){
     sw = !digitalRead(s);
   }
 }
@@ -128,36 +126,38 @@ void Control(int p[]){
   if(p[0] == 1 && p[3] == 1){//  White on Both Sides
     if( p[1] == 1 && p[2] == 1){ // All White
       run(200);
-    }else if( p[1] == 0){ //  turn left, speed: A < B 
+    }else if( p[2] == 0){ // turn right, speed: A > B
+      show_status(2);
+
+      digitalWrite(dir_a, 1);
+      analogWrite(pwn_a, 180);
+      digitalWrite(dir_b, 1);
+      analogWrite(pwn_b, 255);
+
+    }else{ //  turn left, speed: A < B 
+      show_status(3);
+
       digitalWrite(dir_a, 1);
       analogWrite(pwn_a, 255);   
       digitalWrite(dir_b, 1);
-      analogWrite(pwn_b, 200);
-
-      show_status(3);
-    } else if( p[2] == 0){ // turn right, speed: A > B
-      digitalWrite(dir_a, 1);
-      analogWrite(pwn_a, 200);
-      digitalWrite(dir_b, 1);
-      analogWrite(pwn_b, 255);
-      show_status(2);
-    }else{
-      run(200);
+      analogWrite(pwn_b, 180);
     }
   }else if( p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 0){ // All black
-    stop(); // StopandRun( 1000, 160);
-  }else if( p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 1){ // left right angle
+    StopandRun( 1000, 200);
+  }else if( p[0] == 0 && p[1] == 0 && p[3] == 1){ // left right angle
+    show_status(3);
+    run(200);
+    delay(20);
     digitalWrite(dir_a, 0);
-    analogWrite(pwn_a, 200);
+    analogWrite(pwn_a, 180);
     digitalWrite(dir_b, 1);
-    analogWrite(pwn_b, 200);
-    delay(500);
-  }else if( p[0] == 1 && p[1] == 0 && p[2] == 0 && p[3] == 0){ // right right angle
+    analogWrite(pwn_b, 180);
+  }else if( p[0] == 1 && p[2] == 0 && p[3] == 0){ // right right angle
+    show_status(2);
     digitalWrite(dir_a, 1);
-    analogWrite(pwn_a, 200);
+    analogWrite(pwn_a, 180);
     digitalWrite(dir_b, 0);
-    analogWrite(pwn_b, 200);
-    delay(500);
+    analogWrite(pwn_b, 180);
   }else{
     stop();
   }
@@ -172,13 +172,20 @@ void run(int a){
 }
 
 void stop(){
-   show_status(0);
    analogWrite(pwn_a, 255);
    analogWrite(pwn_b, 255);
 }
 
+
+void StopandRun(int t, int speed){
+  stop();
+  delay(t);
+  run(speed);
+  delay(t);
+ }
+
 void RightAngleHandler(){
-  // noting, just in case
+  // nothing, just in case.
 }
 
 // STOP = 0; Forward = 1; Turn Right = 2; Turn left = 3;
@@ -197,24 +204,24 @@ display = c;
      break;
 
     case 1: // Forward
-     b[0] = 1;
+     b[0] = 0;
      b[1] = 0;
      b[2] = 0;
-     b[3] = 0; 
+     b[3] = 1; 
      break;
 
     case 2: // Turn Right
-     b[0] = 1;
+     b[0] = 0;
      b[1] = 0;
      b[2] = 1;
      b[3] = 0;    
      break;
 
     case 3: // Turn Left
-     b[0] = 1;
-     b[1] = 1;
-     b[2] = 0;
-     b[3] = 0;
+     b[0] = 0;
+     b[1] = 0;
+     b[2] = 1;
+     b[3] = 1;
      break;
    }
 
@@ -222,12 +229,6 @@ display = c;
     digitalWrite(displayer[i], b[i]);
   }
  }
-
- void StopandRun(int t, int speed){
-   stop();
-   delay(t);
-   run(speed);
-  }
 
  // Masami thinks he like to take shower, but I don't agree with him.
 /*
@@ -278,4 +279,3 @@ display = c;
 
  }
 */
- // FIFO Round Robin WOFQ and someting else
