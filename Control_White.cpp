@@ -5,11 +5,11 @@ const int pwn_a = 3;  // pin motor A output ;   0 = MaxSpeed, 255 = STOP
 const int dir_b = 13; // pin motor B direction
 const int pwn_b = 11; // pin motor B output
 
-const int ledPin[4] = {4, 5, 6, 7}; // Suppose LED pin = 2 4 6 7
+const int ledPin[4] = {4, 5, 6, 7}; // LED bulb pin = 4 5 6 7; digital write
 
 const int s = 14; // pin for switch
 
-const int IRpin[4] = {4, 16, 15, 5}; //pin for IR sensor
+const int IRpin[4] = {4, 16, 15, 5}; //pin for IR sensor; analog write
 
 const int displayer[4] = {10, 8, 9, 1}; // pin for 7-segment display 
 
@@ -268,6 +268,3 @@ void show_status( int c ){
     a[i] = 0;
   }
  }
-
-
- // FIFO Round Robin WOFQ and someting else
