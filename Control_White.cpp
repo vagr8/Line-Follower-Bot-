@@ -1,20 +1,21 @@
 #include<TimerOne.h>
 #include<Arduino.h>
-const int dir_a = 12; // pin motor A direction; assume 1= forward; 0 = backward
-const int pwn_a = 3;  // pin motor A output ;   0 = MaxSpeed, 255 = STOP
-const int dir_b = 13; // pin motor B direction
-const int pwn_b = 11; // pin motor B output
+const int dir_a = 13; // pin motor A direction; assume 1= forward; 0 = backward
+const int pwn_a = 11;  // pin motor A output ;   0 = MaxSpeed, 255 = STOP
+const int dir_b = 12; // pin motor B direction
+const int pwn_b = 3; // pin motor B output
 
-const int ledPin[4] = {4, 5, 6, 7}; // LED bulb pin = 4 5 6 7; digital write
+// const int ledPin[4] = {4, 5, 6, 7}; // LED bulb pin = 4 5 6 7; digital write
 
 const int s = 14; // pin for switch
 
 const int IRpin[4] = {4, 16, 15, 5}; //pin for IR sensor; analog write
 
-const int displayer[4] = {10, 8, 9, 1}; // pin for 7-segment display 
+const int displayer[4] = {3, 8, 9, 10}; // pin for 7-segment display 
 
-int black[4] = {400, 480, 400, 100};    // thershold for black. If input value < black[], it's black
+int black[4] = {400, 450, 400, 100};    // thershold for black. If input value < black[], it's black
 int white[4] = {0, 0, 0, 0};            // determine color detected. white = 1, black = 0
+int display = 0;
 
 int i;
 int pv[4] = {0, 0, 0, 0}; // value read from IR sensor
@@ -51,7 +52,7 @@ void setup(){
 //set displayer pin and LED pin
   for(i = 0; i < 4; i++){
     pinMode(displayer[i], OUTPUT);
-    pinMode(ledPin[i], OUTPUT);
+    //pinMode(ledPin[i], OUTPUT);
   }
 
   pinMode(s, INPUT_PULLUP);
@@ -76,11 +77,12 @@ void loop(){
     {
       tcounter = 0;
       
+      /*
       LEDtimer++;
       if(LEDtimer > 20){ // Change Display every 10*20 = 200 ms
         LEDtimer = 0;
         ledDisplay();
-      }
+      }*/
 
       // read IR sensor value and put into pv[4]
       for(i = 0; i < 4; i++){    
@@ -97,6 +99,9 @@ void loop(){
      Serial.print(white[i]);
       Serial.print( " " );
     }
+
+      Serial.print( " ");
+  Serial.print( display );
 
   Serial.print( "\n");
   }
@@ -122,35 +127,36 @@ void Control(int p[]){
 
   if(p[0] == 1 && p[3] == 1){//  White on Both Sides
     if( p[1] == 1 && p[2] == 1){ // All White
-      run(160);
+      run(200);
     }else if( p[1] == 0){ //  turn left, speed: A < B 
       digitalWrite(dir_a, 1);
-      analogWrite(pwn_a, 250); 
+      analogWrite(pwn_a, 255);   
       digitalWrite(dir_b, 1);
-      analogWrite(pwn_b, 180);
+      analogWrite(pwn_b, 200);
+
       show_status(3);
     } else if( p[2] == 0){ // turn right, speed: A > B
       digitalWrite(dir_a, 1);
-      analogWrite(pwn_a, 180);
+      analogWrite(pwn_a, 200);
       digitalWrite(dir_b, 1);
-      analogWrite(pwn_b, 250);
+      analogWrite(pwn_b, 255);
       show_status(2);
     }else{
-      run(160);
+      run(200);
     }
   }else if( p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 0){ // All black
-    StopandRun( 1000, 160);
+    stop(); // StopandRun( 1000, 160);
   }else if( p[0] == 0 && p[1] == 0 && p[2] == 0 && p[3] == 1){ // left right angle
     digitalWrite(dir_a, 0);
-    analogWrite(pwn_a, 60);
+    analogWrite(pwn_a, 200);
     digitalWrite(dir_b, 1);
-    analogWrite(pwn_b, 60);
+    analogWrite(pwn_b, 200);
     delay(500);
   }else if( p[0] == 1 && p[1] == 0 && p[2] == 0 && p[3] == 0){ // right right angle
     digitalWrite(dir_a, 1);
-    analogWrite(pwn_a, 60);
+    analogWrite(pwn_a, 200);
     digitalWrite(dir_b, 0);
-    analogWrite(pwn_b, 60);
+    analogWrite(pwn_b, 200);
     delay(500);
   }else{
     stop();
@@ -179,6 +185,7 @@ void RightAngleHandler(){
 void show_status( int c ){
  int b[4] = {0, 0, 0, 0};
  int i;
+display = c;
 
  switch(c){
 
@@ -197,9 +204,9 @@ void show_status( int c ){
      break;
 
     case 2: // Turn Right
-     b[0] = 0;
-     b[1] = 1;
-     b[2] = 0;
+     b[0] = 1;
+     b[1] = 0;
+     b[2] = 1;
      b[3] = 0;    
      break;
 
@@ -223,15 +230,16 @@ void show_status( int c ){
   }
 
  // Masami thinks he like to take shower, but I don't agree with him.
-
+/*
  void ledDisplay(){
    int i;
    int bit[4];
 
    LEDcount++;
    if(LEDcount > 5){
-     LEDcount = 0;
+     LEDcount = 1;
       reset(bit);
+      
    }
 
   switch(LEDcount){
@@ -263,8 +271,11 @@ void show_status( int c ){
  void reset(int a[]){
    int i;
 
-  a[i] = 1;
-  for(i = 1; i<4 ;i++){
+    a[0] = 1;
+    for(i = 1; i<4 ;i++){
     a[i] = 0;
   }
+
  }
+*/
+ // FIFO Round Robin WOFQ and someting else
