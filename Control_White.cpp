@@ -310,7 +310,7 @@ void show_status( int c ){
         digitalWrite(displayer[i], b[i]); 
     }    
 } 
-
+     
 // Masami thinks he like to take shower, but I don't agree with him. 
 /* 
 void ledDisplay(){ 
@@ -352,3 +352,4 @@ a[i] = 0;
 } 
 } 
 */
+
